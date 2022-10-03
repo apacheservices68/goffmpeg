@@ -82,6 +82,7 @@ type Mediafile struct {
 	pixFmt                string
 	rawInputArgs          []string
 	rawOutputArgs         []string
+	filterComplex         string
 }
 
 /*** SETTERS ***/
@@ -366,6 +367,10 @@ func (m *Mediafile) SetRawInputArgs(args []string) {
 
 func (m *Mediafile) SetRawOutputArgs(args []string) {
 	m.rawOutputArgs = args
+}
+
+func (m *Mediafile) SetFilterComplex(v string) {
+	m.filterComplex = v
 }
 
 /*** GETTERS ***/
@@ -655,6 +660,10 @@ func (m *Mediafile) RawOutputArgs() []string {
 	return m.rawOutputArgs
 }
 
+func (m *Mediafile) FilterComplex() string {
+	return m.filterComplex
+}
+
 /** OPTS **/
 func (m *Mediafile) ToStrCommand() []string {
 	var strCommand []string
@@ -724,6 +733,7 @@ func (m *Mediafile) ToStrCommand() []string {
 		"OutputPath",
 		"Bframe",
 		"MovFlags",
+		"FilterComplex",
 	}
 
 	for _, name := range opts {
@@ -1125,6 +1135,14 @@ func (m *Mediafile) ObtainPixFmt() []string {
 	}
 }
 
+func (m *Mediafile) ObtainFilterComplex() []string {
+	if m.filterComplex != "" {
+		return []string{"-filter_complex", m.filterComplex, "-map", "[v]", "-map", "[a]"}
+	} else {
+		return nil
+	}
+}
+
 func (m *Mediafile) ObtainHttpKeepAlive() []string {
 	if m.httpKeepAlive {
 		return []string{"-multiple_requests", "1"}
@@ -1170,10 +1188,10 @@ func (m *Mediafile) ObtainCompressionLevel() []string {
 func (m *Mediafile) ObtainMapMetadata() []string {
 	if m.mapMetadata != "" {
 		return []string{"-map_metadata", m.mapMetadata}
-  }
-  return nil
+	}
+	return nil
 }
-    
+
 func (m *Mediafile) ObtainEncryptionKey() []string {
 	if m.encryptionKey != "" {
 		return []string{"-hls_key_info_file", m.encryptionKey}
